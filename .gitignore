@@ -41,3 +41,8 @@ vignettes/*.pdf
 # Data files
 *.json
 *.csv
+
+# Python
+*.pyc
+.venv
+*.egg-info*
