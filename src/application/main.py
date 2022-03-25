@@ -1,6 +1,5 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from loaders import sql_load
 from psycoptts.add_outcomes import add_outcome_from_csv
 
 from sqlalchemy import create_engine
