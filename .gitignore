@@ -39,5 +39,5 @@ vignettes/*.pdf
 .Renviron
 
 # Data files
-.json
-.csv
+*.json
+*.csv
