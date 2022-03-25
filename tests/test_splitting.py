@@ -1,78 +1,30 @@
-from pandas import DataFrame
-import pandas as pd
-from pandas.testing import assert_frame_equal
-
-from psycoptts.add_outcomes import add_outcome_from_df
+from testing_utils import *
+from sklearn.model_selection import train_test_split
 
 
-def test_adding_first_outcome():
-    all_patients_str = """dw_ek_borger
-                        1,
-                        2,
-                        3,
-                        4,
+def test_stratified_split():
+    in_df_str = """dw_ek_borger,outcome1_name,outcome2_name
+                        1, 1, 0
+                        2, 1, 0
+                        3, 1, 0
+                        4, 1, 0
+                        5, 0, 1
+                        6, 0, 1
+                        7, 0, 1
+                        8, 0, 1
+                        9, 0, 1
+                        10, 0, 1
                         """
+    in_df = str_to_df(in_df_str)
 
-    outcome_str = """dw_ek_borger
-                        1,
-                        2,
-                        """
+    X_train, X_test = train_test_split(
+        in_df["dw_ek_borger"],
+        test_size=0.50,
+        random_state=42,
+        stratify=in_df[["outcome1_name", "outcome2_name"]],
+    )
 
-    all_patients_df = str_to_df(all_patients_str)
-    outcome_df = str_to_df(outcome_str)
-    out_df = add_outcome_from_df(all_patients_df, outcome_df, "outcome_name")
-
-    expected_out_str = """dw_ek_borger,outcome_name,
-                        1, 1.0, 
-                        2, 1.0, 
-                        3, 0.0, 
-                        4, 0.0, 
-                        """
-    expected_values = str_to_df(expected_out_str)
-
-    assert_frame_equal(out_df, expected_values)
+    pass
 
 
-def test_adding_second_outcome():
-    all_patients_str = """dw_ek_borger
-                        1,
-                        2,
-                        3,
-                        4,
-                        """
-
-    outcome_1_str = """dw_ek_borger
-                        1,
-                        2,
-                        """
-
-    outcome_2_str = """dw_ek_borger
-                        3,
-                        4,
-                        """
-
-    all_patients_df = str_to_df(all_patients_str)
-    outcome1_df = str_to_df(outcome_1_str)
-    outcome2_df = str_to_df(outcome_2_str)
-
-    out_df = add_outcome_from_df(all_patients_df, outcome1_df, "outcome1_name")
-    out_df = add_outcome_from_df(out_df, outcome2_df, "outcome2_name")
-
-    expected_out_str = """dw_ek_borger,outcome1_name,outcome2_name
-                        1, 1.0, 0.0,
-                        2, 1.0, 0.0,
-                        3, 0.0, 1.0,
-                        4, 0.0, 1.0
-                        """
-    expected_values = str_to_df(expected_out_str)
-
-    assert_frame_equal(out_df, expected_values)
-
-
-def str_to_df(str) -> DataFrame:
-    from io import StringIO
-
-    df = pd.read_table(StringIO(str), sep=",", index_col=False)
-
-    # Drop "Unnamed" cols
-    return df.loc[:, ~df.columns.str.contains("^Unnamed")]
+test_stratified_split()
