@@ -3,38 +3,60 @@ from sklearn.model_selection import train_test_split
 from loaders import sql_load
 from psycoptts.add_outcomes import add_outcome_from_csv
 
-def load_all_patients():
-    view = "[FOR_kohorte_indhold_pt_journal_inkl_2021_feb2022]"
-    sql = "SELECT * FROM [fct]." + view 
+from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
 
-    df = sql_load(sql, database="USR_PS_FORSK", chunksize = None)
-    return df["dw_ek_borger"]
+import urllib
+import urllib.parse
+
+
+def load_all_patients(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
+    view = f"{view}"
+    query = "SELECT * FROM [fct]." + view
+
+    print(f"Getting data from query: {query}")
+
+    driver = "SQL Server"
+    server = "BI-DPA-PROD"
+    database = "USR_PS_Forsk"
+
+    params = urllib.parse.quote(
+        f"DRIVER={driver};SERVER={server};DATABASE={database};Trusted_Connection=yes"
+    )
+    engine = create_engine(
+        "mssql+pyodbc:///?odbc_connect=%s" % params, poolclass=NullPool
+    )
+    conn = engine.connect().execution_options(stream_results=True)
+
+    df = pd.read_sql(query, conn, chunksize=None)
+    return df[["dw_ek_borger"]]
+
 
 if __name__ == "__main__":
-    stratify_cols = ["outcome1", "outcome2"]
+    outcomes = ["lung_cancer", "mamma_cancer"]
     random_state = 42
 
-    all_patient_ids = load_all_patients().to_frame()
+    combined_df = load_all_patients()
 
-    out_df = add_outcome_from_csv(all_patient_ids, "outcome_ids/lung_cancer_ids.csv", "lung_cancer")
-
-    # TODO
-    # Generate in_df from the csvs using add_outcome_from_csv()
+    for outcome in outcomes:
+        combined_df = add_outcome_from_csv(
+            combined_df, f"outcome_ids/{outcome}_cancer_ids.csv", outcome
+        )
 
     X_train, X_intermediate = train_test_split(
-        out_df["dw_ek_borger"],
+        combined_df,
         test_size=0.4,
         random_state=random_state,
-        stratify=all_patient_ids[stratify_cols],
+        stratify=combined_df[outcomes],
     )
 
     X_test, X_val = train_test_split(
         X_intermediate,
         test_size=0.5,
         random_state=random_state,
-        stratify=X_intermediate[stratify_cols],
+        stratify=X_intermediate[outcomes],
     )
 
-    X_train.to_csv("csv/train_ids.csv")
-    X_val.to_csv("csv/val_ids.csv")
-    X_test.to_csv("csv/test_ids.csv")
+    X_train["dw_ek_borger"].to_csv("csv/train_ids.csv", index=False)
+    X_val["dw_ek_borger"].to_csv("csv/val_ids.csv", index=False)
+    X_test["dw_ek_borger"].to_csv("csv/test_ids.csv", index=False)
