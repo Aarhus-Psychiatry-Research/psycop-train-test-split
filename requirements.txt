@@ -2,3 +2,4 @@ pandas
 sklearn
 black
 pytest
+git+https://github.com/Aarhus-Psychiatry-Research/utilities
