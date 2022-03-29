@@ -36,8 +36,15 @@ vignettes/*.pdf
 *.knit.md
 
 # R Environment Variables
+# R Prog.
 .Renviron
 
 # Data files
-.json
-.csv
+*.json
+*.csv
+
+# Python
+*.pyc
+.venv
+*.egg-info*
+.=.swp

@@ -1,0 +1,8 @@
+pandas
+sklearn
+# Formatting
+black
+
+# Testing
+pytest
+git+https://github.com/Aarhus-Psychiatry-Research/utilities
