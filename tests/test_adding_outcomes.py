@@ -1,5 +1,3 @@
-from pandas import DataFrame
-import pandas as pd
 from pandas.testing import assert_frame_equal
 
 from psycoptts.add_outcomes import add_outcome_from_df
