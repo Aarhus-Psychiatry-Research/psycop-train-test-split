@@ -1,8 +1,11 @@
-pandas
-sklearn
+pandas>=1.4.2
+sklearn>=1.0.2
+
 # Formatting
-black
+black>=22.3
 
 # Testing
-pytest
-git+https://github.com/Aarhus-Psychiatry-Research/utilities
+pytest>=7.1.1
+
+# SQL
+sqlalchemy>=1.4.34
