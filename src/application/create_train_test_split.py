@@ -9,7 +9,7 @@ import urllib
 import urllib.parse
 
 
-def load_all_patients(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
+def load_patient_ids(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
     view = f"{view}"
     query = "SELECT * FROM [fct]." + view
 
@@ -32,14 +32,26 @@ def load_all_patients(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
 
 
 if __name__ == "__main__":
-    outcomes = ["lung_cancer", "mamma_cancer"]
+    outcomes = [
+        "transition_to_scizophrenia", 
+        "inpatient_forced_admissions", 
+        "outpatient_forced_admissions",
+        "mammarian_cancer",
+        "lung_cancer",
+        "t2d",
+        "acute_sedatives"
+    ]
+
     random_state = 42
 
-    combined_df = load_all_patients()
+    combined_df = load_patient_ids()
 
     for outcome in outcomes:
         combined_df = add_outcome_from_csv(
-            combined_df, f"outcome_ids/{outcome}_cancer_ids.csv", outcome
+            df_in=combined_df, 
+            df_outcome=f"outcome_ids/{outcome}.csv", 
+            new_colname=outcome, 
+            id_colname="dw_ek_borger"
         )
 
     X_train, X_intermediate = train_test_split(
