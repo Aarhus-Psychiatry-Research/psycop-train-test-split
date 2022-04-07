@@ -46,7 +46,7 @@ def test_props():
         splits = {"train": None, "test": None}
 
         splits["train"], splits["test"] = stratified_split_by_each_category(
-            df=unsplit_df, test_prop=split_props["test"], stratify_cols=all_outcomes
+            df=unsplit_df, test_size=split_props["test"], stratify=all_outcomes
         )
 
         for outcome in all_outcomes:
