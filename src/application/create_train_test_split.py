@@ -67,7 +67,7 @@ if __name__ == "__main__":
         )
 
         n_with_outcome = combined_df[combined_df[outcome] == 1].shape[0]
-        unsplit_outcome_props[outcome] = n_with_outcome / n_in_split["total"]
+        unsplit_outcome_props[outcome] = round(n_with_outcome / n_in_split["total"], 4)
 
         msg.good(f"Added {outcome}")
 
@@ -98,11 +98,11 @@ if __name__ == "__main__":
     train_outcome_props = defaultdict(lambda: 0)
 
     for outcome in outcomes:
-        train_outcome_prop = (
-            X_train[X_train[outcome] == 1].shape[0] / n_in_split["train"]
+        train_outcome_prop = round(
+            X_train[X_train[outcome] == 1].shape[0] / n_in_split["train"], 4
         )
-        test_outcome_prop = X_test[X_test[outcome] == 1].shape[0] / n_in_split["test"]
-        val_outcome_prop = X_val[X_val[outcome] == 1].shape[0] / n_in_split["val"]
+        test_outcome_prop = round(X_test[X_test[outcome] == 1].shape[0] / n_in_split["test"], 4)
+        val_outcome_prop = round(X_val[X_val[outcome] == 1].shape[0] / n_in_split["val"], 4)
 
         print(
             f"    (U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome}"
