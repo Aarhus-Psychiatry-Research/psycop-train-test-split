@@ -71,9 +71,9 @@ def test_props():
             print(
                 f"    {split_type}: {expected_props[outcome]} | {avg_simulated_outcome_prop} – {outcome} – (Expected | Simulated)"
             )
-            # assert avg_simulated_outcome_prop == pytest.approx(
-            #     expected_props[outcome], rel=0.05
-            # )
+            assert avg_simulated_outcome_prop == pytest.approx(
+                expected_props[outcome], rel=0.05
+            )
 
 
 def create_list_of_vals_with_prop_of_ones(prop, n):
