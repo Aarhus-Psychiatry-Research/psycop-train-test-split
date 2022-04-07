@@ -7,33 +7,37 @@ import random
 
 def stratified_split_by_each_category(
     df: DataFrame,
-    test_prop=Union[float, int],
-    stratify_cols: Optional[List[str]] = None,
+    test_size=Union[float, int],
+    random_state=int,
+    stratify: Optional[List[str]] = None,
 ) -> Tuple[DataFrame, DataFrame]:
     no_cat_str = "no_cat"
 
     # Generate target ns
     target_n_in_test_by_cat = {
-        strat_col: df[df[strat_col] == 1].shape[0] * test_prop
-        for strat_col in stratify_cols
+        strat_col: df[df[strat_col] == 1].shape[0] * test_size
+        for strat_col in stratify
     }.copy()
 
-    if isinstance(test_prop, float):
-        target_total_n_in_test = test_prop * df.shape[0]
+    if isinstance(test_size, float):
+        target_total_n_in_test = test_size * df.shape[0]
 
     df["is_test"] = np.zeros(df.shape[0])
 
     # Create a stack of idx to pull from
     patient_ids_for_each_cat = {
-        col: df.index[df[col] == 1].tolist() for col in stratify_cols
+        col: df.index[df[col] == 1].tolist() for col in stratify
     }
+
+    # Set random state for reproducibility
+    np.random.RandomState(random_state)
 
     # Shuffle the idx
     for key in patient_ids_for_each_cat.keys():
         random.shuffle(patient_ids_for_each_cat[key])
 
     # Mark idx that don't belong to any stratification-col
-    df[no_cat_str] = np.where(df[stratify_cols].sum(axis=1) == 0, 1, 0)
+    df[no_cat_str] = np.where(df[stratify].sum(axis=1) == 0, 1, 0)
     patient_ids_for_each_cat[no_cat_str] = df.index[df[no_cat_str] == 1].tolist()
 
     # Initialise counters for while-loop
@@ -44,7 +48,7 @@ def stratified_split_by_each_category(
     while n_in_test < target_total_n_in_test:
         ratio_target_current_prop = {
             cat: n_in_test_by_category[cat] / target_n_in_test_by_cat[cat]
-            for cat in stratify_cols
+            for cat in stratify
         }
 
         if get_minimum_val_in_dict(ratio_target_current_prop) >= 1:
@@ -68,7 +72,7 @@ def stratified_split_by_each_category(
         )
 
         # Increment counter in all cats the idx belongs to
-        for cat in stratify_cols:
+        for cat in stratify:
             n_in_test_by_category[cat] += df[cat][idx]
 
         df.at[idx, "is_test"] = 1
