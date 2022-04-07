@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List, Union
 import pandas as pd
 import numpy as np
@@ -13,43 +14,49 @@ common_props = [0.95, 0.05]
 
 
 def test_props():
-    outcomes = ["cancer", "t2d", "schizophrenia"]
-    n = 1000
+    common_outcomes = ["cancer", "t2d"]
+    uncommon_outcomes = ["schizophrenia"]
+    all_outcomes = common_outcomes + uncommon_outcomes
+
+    n = 120_000
     test_prop = 0.3
-    common_prop = 0.2
-    schizo_prop = 0.01
+    common_prop = 0.02
+    uncommon_prop = 0.004
 
+    # Generate list of values to sample from
     common_values = get_list_of_n_01_with_prop_equal_1(prop=common_prop, n=n)
-    uncommon_values = get_list_of_n_01_with_prop_equal_1(prop=schizo_prop, n=n)
+    uncommon_values = get_list_of_n_01_with_prop_equal_1(prop=uncommon_prop, n=n)
 
-    # Benchmark and test
-    t2d_props = []
-    schizo_props = []
+    # Initialise
+    expected_props = defaultdict(lambda: 0)
+    simulated_test_props = defaultdict(list)
 
-    for i in range(1, 50):
+    for i in range(1):
         unsplit_df = pd.DataFrame()
 
-        for outcome in outcomes:
+        for outcome in common_outcomes:
+            expected_props[outcome] = common_prop
             random.shuffle(common_values)
-            random.shuffle(uncommon_values)
+            unsplit_df[outcome] = common_values
 
-            if outcome != "schizophrenia":
-                unsplit_df[outcome] = common_values
-            elif outcome == "schizophrenia":
-                unsplit_df[outcome] = uncommon_values
+        for outcome in uncommon_outcomes:
+            expected_props[outcome] = uncommon_prop
+            random.shuffle(uncommon_values)
+            unsplit_df[outcome] = uncommon_values
 
         train, test = stratified_split_by_each_category(
-            df=unsplit_df, test_prop=test_prop, stratify_cols=outcomes
+            df=unsplit_df, test_prop=test_prop, stratify_cols=common_outcomes
         )
 
-        t2d_props.append(test[test["t2d"] == 1].shape[0] / (n * test_prop))
-        schizo_props.append(test[test["schizophrenia"] == 1].shape[0] / (n * test_prop))
+        for outcome in all_outcomes:
+            outcome_prop_of_test = test[test[outcome] == 1].shape[0] / (n * test_prop)
+            simulated_test_props[outcome].append(outcome_prop_of_test)
 
-    avg_t2d_prop = sum(t2d_props) / len(t2d_props)
-    assert avg_t2d_prop == pytest.approx(common_prop, abs=0.01)
-
-    avg_schizo_prop = sum(schizo_props) / len(schizo_props)
-    assert avg_schizo_prop == pytest.approx(schizo_prop, abs=0.01)
+    # Aggregate proportions and get avg. across simulations
+    for outcome in all_outcomes:
+        simulated_test_prop = simulated_test_props[outcome]
+        avg_outcome_prop = sum(simulated_test_prop) / len(simulated_test_prop)
+        assert avg_outcome_prop == pytest.approx(expected_props[outcome], rel=0.05)
 
 
 def get_list_of_n_01_with_prop_equal_1(prop, n):
@@ -69,3 +76,6 @@ def get_proportion_of_list_equal_to_val(val: Union[float, int], list: List) -> f
         float: The proportion of items matching the condition
     """
     return len([i for i in list if i == val]) / len(list)
+
+
+test_props()

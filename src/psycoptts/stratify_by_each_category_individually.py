@@ -61,7 +61,10 @@ def stratified_split_by_each_category(
         idx = patient_ids_for_each_cat[cat_to_add_to].pop()
         remove_value_from_all_lists_it_exists_in(
             value=idx, dict_of_lists=patient_ids_for_each_cat
-        )  # If an idx belongs to multiple categories, also remove if from those that aren't currently cat_to_add_to
+        )
+        # If an idx belongs to multiple categories, also remove if from those that aren't currently cat_to_add_to
+        # This is __super__ inefficient (95% of current runtime), but running for 120.000 idxs takes 45 seconds.
+        # Acceptable runtime for current application.
 
         # Increment counter in all cats the idx belongs to
         for cat in stratify_cols:
