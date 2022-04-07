@@ -47,6 +47,9 @@ def stratified_split_by_each_category(
             for cat in stratify_cols
         }
 
+        if get_minimum_val_in_dict(ratio_target_current_prop) >= 1:
+            all_cats_reached_target_n_in_test = True
+
         if all_cats_reached_target_n_in_test:
             cat_to_add_to = no_cat_str
         else:
@@ -54,9 +57,6 @@ def stratified_split_by_each_category(
             cat_to_add_to = min(
                 ratio_target_current_prop, key=ratio_target_current_prop.get
             )
-
-            if get_minimum_val_in_dict(ratio_target_current_prop) >= 1:
-                all_cats_reached_target_n_in_test = True
 
         idx = patient_ids_for_each_cat[cat_to_add_to].pop()
         remove_value_from_all_lists_it_exists_in(
