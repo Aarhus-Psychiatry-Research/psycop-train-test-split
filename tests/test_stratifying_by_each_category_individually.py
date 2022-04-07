@@ -17,7 +17,7 @@ def test_props():
     outcomes = {"common": ["cancer", "t2d"], "uncommon": ["schizophrenia"]}
     all_outcomes = outcomes["common"] + outcomes["uncommon"]
 
-    n = 1200
+    n = 120_00
     split_props = {"train": 0.7, "test": 0.3}
     outcome_type_props = {"common": 0.02, "uncommon": 0.004}
 
@@ -33,7 +33,7 @@ def test_props():
     expected_props = defaultdict(lambda: 0)
     simulated_props = {c: defaultdict(list) for c in ["train", "test"]}
 
-    for i in range(1):
+    for i in range(5):
         unsplit_df = pd.DataFrame()
 
         for outcome_type in ["common", "uncommon"]:
