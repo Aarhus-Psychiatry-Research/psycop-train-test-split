@@ -29,7 +29,7 @@ def stratified_split_by_each_category(
     }
 
     # Set random state for reproducibility
-    np.random.RandomState(random_state)
+    random.seed(random_state)
 
     # Shuffle the idx
     for key in patient_ids_for_each_cat.keys():

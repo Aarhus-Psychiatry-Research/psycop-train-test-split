@@ -17,7 +17,7 @@ def test_props():
     outcomes = {"common": ["cancer", "t2d"], "uncommon": ["schizophrenia"]}
     all_outcomes = outcomes["common"] + outcomes["uncommon"]
 
-    n = 120_00
+    n = 12_000
     split_props = {"train": 0.7, "test": 0.3}
     outcome_type_props = {"common": 0.02, "uncommon": 0.004}
 
