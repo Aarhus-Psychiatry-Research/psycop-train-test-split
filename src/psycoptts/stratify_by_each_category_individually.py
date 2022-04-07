@@ -75,8 +75,8 @@ def stratified_split_by_each_category(
 
         n_in_test += 1
 
-    train = df[df["is_test"] == 0]
-    test = df[df["is_test"] == 1]
+    train = df[df["is_test"] == 0].drop(columns=["is_test", no_cat_str])
+    test = df[df["is_test"] == 1].drop(columns=["is_test", no_cat_str])
 
     return train, test
 
