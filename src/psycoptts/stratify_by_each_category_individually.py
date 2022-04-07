@@ -15,8 +15,7 @@ def stratified_split_by_each_category(
 
     # Generate target ns
     target_n_in_test_by_cat = {
-        strat_col: df[df[strat_col] == 1].shape[0] * test_size
-        for strat_col in stratify
+        strat_col: df[df[strat_col] == 1].shape[0] * test_size for strat_col in stratify
     }.copy()
 
     if isinstance(test_size, float):

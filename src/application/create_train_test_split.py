@@ -1,7 +1,9 @@
 from collections import defaultdict
 import pandas as pd
 from psycoptts.add_outcomes import add_outcome_from_csv
-from psycoptts.stratify_by_each_category_individually import stratified_split_by_each_category
+from psycoptts.stratify_by_each_category_individually import (
+    stratified_split_by_each_category,
+)
 
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
@@ -64,7 +66,7 @@ if __name__ == "__main__":
             id_colname="dw_ek_borger",
         )
 
-        n_with_outcome = combined_df[combined_df[outcome]==1].shape[0]
+        n_with_outcome = combined_df[combined_df[outcome] == 1].shape[0]
         unsplit_outcome_props[outcome] = n_with_outcome / n_in_split["total"]
 
         msg.good(f"Added {outcome}")
@@ -96,11 +98,15 @@ if __name__ == "__main__":
     train_outcome_props = defaultdict(lambda: 0)
 
     for outcome in outcomes:
-        train_outcome_prop = X_train[X_train[outcome]==1].shape[0] / n_in_split["train"]
-        test_outcome_prop = X_test[X_test[outcome]==1].shape[0] / n_in_split["test"]
-        val_outcome_prop = X_val[X_val[outcome]==1].shape[0] / n_in_split["val"]
+        train_outcome_prop = (
+            X_train[X_train[outcome] == 1].shape[0] / n_in_split["train"]
+        )
+        test_outcome_prop = X_test[X_test[outcome] == 1].shape[0] / n_in_split["test"]
+        val_outcome_prop = X_val[X_val[outcome] == 1].shape[0] / n_in_split["val"]
 
-        print(f"    (U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome}")
+        print(
+            f"    (U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome}"
+        )
 
     X_train["dw_ek_borger"].to_csv("splits/train_ids.csv", index=False)
     X_val["dw_ek_borger"].to_csv("splits/val_ids.csv", index=False)
