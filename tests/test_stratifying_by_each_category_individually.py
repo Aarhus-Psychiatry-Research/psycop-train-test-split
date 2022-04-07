@@ -76,6 +76,3 @@ def get_proportion_of_list_equal_to_val(val: Union[float, int], list: List) -> f
         float: The proportion of items matching the condition
     """
     return len([i for i in list if i == val]) / len(list)
-
-
-test_props()
