@@ -77,18 +77,18 @@ if __name__ == "__main__":
 
     msg.info("Starting train/intermediate split")
     X_train, X_intermediate = stratified_split_by_each_category(
-        combined_df,
-        test_size=train_prop,
+        df = combined_df,
+        test_prop=train_prop,
         random_state=random_state,
-        stratify=outcomes,
+        stratify_cols=outcomes,
     )
 
-    msg.good("Starting test/val split")
+    msg.info("Starting test/val split")
     X_test, X_val = stratified_split_by_each_category(
-        X_intermediate,
-        test_size=val_test_split,
+        df = X_intermediate,
+        test_prop=val_test_split,
         random_state=random_state,
-        stratify=outcomes,
+        stratify_cols=outcomes,
     )
 
     n_in_split["train"] = X_train.shape[0]
