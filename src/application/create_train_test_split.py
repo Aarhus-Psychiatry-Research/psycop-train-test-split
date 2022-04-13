@@ -58,13 +58,13 @@ if __name__ == "__main__":
         )
         msg.good(f"Added {outcome}")
 
-    val_and_test_prop = 0.3
+    train_prop = 0.3
     val_test_split = 0.5
-    # Meaning that the prop of the dataset that ends in val is val_test_split * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
+    # Meaning that the prop of the dataset that ends in val is train_prop * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
 
     X_train, X_intermediate = train_test_split(
         combined_df,
-        test_size=val_and_test_prop,
+        test_size=train_prop,
         random_state=random_state,
         stratify=combined_df[outcomes],
     )

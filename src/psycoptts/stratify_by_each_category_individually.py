@@ -7,9 +7,21 @@ import random
 
 def stratified_split_by_each_category(
     df: DataFrame,
-    test_prop=Union[float, int],
+    test_prop: float,
     stratify_cols: Optional[List[str]] = None,
 ) -> Tuple[DataFrame, DataFrame]:
+    """Splits a dataset into train, test, balancing each stratify_col individually.
+    It doesn't consider each combination of stratify_col variables as unique.
+    See README for an example.
+
+    Args:
+        df (DataFrame): Contains the ids to split, as well as columns to stratify on
+        test_prop (Union[float, int]): Test proportion.
+        stratify_cols (Optional[List[str]], optional): Which columns to stratify on. Defaults to None.
+
+    Returns:
+        Tuple[DataFrame, DataFrame]: Returns a tuple of train, test dfs.
+    """
     no_cat_str = "no_cat"
 
     # Generate target ns
@@ -18,8 +30,7 @@ def stratified_split_by_each_category(
         for strat_col in stratify_cols
     }.copy()
 
-    if isinstance(test_prop, float):
-        target_total_n_in_test = test_prop * df.shape[0]
+    target_total_n_in_test = test_prop * df.shape[0]
 
     df["is_test"] = np.zeros(df.shape[0])
 
