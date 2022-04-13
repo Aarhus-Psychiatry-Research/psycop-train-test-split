@@ -1,6 +1,9 @@
+from collections import defaultdict
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from psycoptts.add_outcomes import add_outcome_from_csv
+from psycoptts.stratify_by_each_category_individually import (
+    stratified_split_by_each_category,
+)
 
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
@@ -48,6 +51,12 @@ if __name__ == "__main__":
     random_state = 42
 
     combined_df = load_patient_ids()
+    n_in_split = {c: 0 for c in ["total", "train", "test", "val"]}
+
+    n_in_split["total"] = combined_df.shape[0]
+
+    # Generate unsplit_outcome_props to test the split
+    unsplit_outcome_props = defaultdict(lambda: 0)
 
     for outcome in outcomes:
         combined_df = add_outcome_from_csv(
@@ -56,26 +65,52 @@ if __name__ == "__main__":
             new_colname=outcome,
             id_colname="dw_ek_borger",
         )
+
+        n_with_outcome = combined_df[combined_df[outcome] == 1].shape[0]
+        unsplit_outcome_props[outcome] = round(n_with_outcome / n_in_split["total"], 4)
+
         msg.good(f"Added {outcome}")
 
-    val_and_test_prop = 0.3
-    val_test_split = 0.5 
-    # Meaning that the prop of the dataset that ends in val is val_test_split * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
+    train_prop = 0.3
+    val_test_split = 0.5
+    # Meaning that the prop of the dataset that ends in val is train_prop * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
 
-
-    X_train, X_intermediate = train_test_split(
+    msg.info("Starting train/intermediate split")
+    X_train, X_intermediate = stratified_split_by_each_category(
         combined_df,
-        test_size=val_and_test_prop,
+        test_size=train_prop,
         random_state=random_state,
-        stratify=combined_df[outcomes],
+        stratify=outcomes,
     )
 
-    X_test, X_val = train_test_split(
+    msg.good("Starting test/val split")
+    X_test, X_val = stratified_split_by_each_category(
         X_intermediate,
         test_size=val_test_split,
         random_state=random_state,
-        stratify=X_intermediate[outcomes],
+        stratify=outcomes,
     )
+
+    n_in_split["train"] = X_train.shape[0]
+    n_in_split["test"] = X_test.shape[0]
+    n_in_split["val"] = X_val.shape[0]
+
+    train_outcome_props = defaultdict(lambda: 0)
+
+    for outcome in outcomes:
+        train_outcome_prop = round(
+            X_train[X_train[outcome] == 1].shape[0] / n_in_split["train"], 4
+        )
+        test_outcome_prop = round(
+            X_test[X_test[outcome] == 1].shape[0] / n_in_split["test"], 4
+        )
+        val_outcome_prop = round(
+            X_val[X_val[outcome] == 1].shape[0] / n_in_split["val"], 4
+        )
+
+        msg.info(
+            f"    (U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome}"
+        )
 
     X_train["dw_ek_borger"].to_csv("splits/train_ids.csv", index=False)
     X_val["dw_ek_borger"].to_csv("splits/val_ids.csv", index=False)
