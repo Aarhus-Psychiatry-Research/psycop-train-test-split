@@ -17,7 +17,7 @@ def test_props():
     outcomes = {"common": ["cancer", "t2d"], "uncommon": ["schizophrenia"]}
     all_outcomes = outcomes["common"] + outcomes["uncommon"]
 
-    n = 120_00
+    n = 12_000
     split_props = {"train": 0.7, "test": 0.3}
     outcome_type_props = {"common": 0.02, "uncommon": 0.004}
 
@@ -46,7 +46,7 @@ def test_props():
         splits = {"train": None, "test": None}
 
         splits["train"], splits["test"] = stratified_split_by_each_category(
-            df=unsplit_df, test_prop=split_props["test"], stratify_cols=all_outcomes
+            df=unsplit_df, test_size=split_props["test"], stratify=all_outcomes
         )
 
         for outcome in all_outcomes:
