@@ -22,6 +22,7 @@ jobs:
     - name: Run and write pytest
       run: |
         pip install --editable .
+        set -o pipefail
         python -m  pytest --cov=src/psycoptts --cov-report term-missing | tee pytest-coverage.txt
     - name: Pytest coverage comment
       id: coverage-comment
