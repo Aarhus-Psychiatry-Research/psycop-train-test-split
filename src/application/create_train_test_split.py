@@ -75,7 +75,7 @@ if __name__ == "__main__":
     val_test_split = 0.5
     # Meaning that the prop of the dataset that ends in val is train_prop * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
 
-    msg.good("Starting train/intermediate split")
+    msg.info("Starting train/intermediate split")
     X_train, X_intermediate = stratified_split_by_each_category(
         combined_df,
         test_size=train_prop,
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             X_val[X_val[outcome] == 1].shape[0] / n_in_split["val"], 4
         )
 
-        print(
+        msg.info(
             f"    (U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome}"
         )
 
