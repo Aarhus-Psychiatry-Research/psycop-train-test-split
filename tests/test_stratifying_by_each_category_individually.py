@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Union
 import pandas as pd
-import numpy as np
+from wasabi import msg
 from psycoptts.stratify_by_each_category_individually import (
     stratified_split_by_each_category,
 )
@@ -14,6 +14,9 @@ common_props = [0.95, 0.05]
 
 
 def test_props():
+    random_state = 42
+    random.seed(random_state)
+
     outcomes = {"common": ["cancer", "t2d"], "uncommon": ["schizophrenia"]}
     all_outcomes = outcomes["common"] + outcomes["uncommon"]
 
@@ -33,8 +36,10 @@ def test_props():
     expected_props = defaultdict(lambda: 0)
     simulated_props = {c: defaultdict(list) for c in ["train", "test"]}
 
-    for i in range(5):
+    for i in range(1):
+        msg.good(f"Beginning iteration {i+1}")
         unsplit_df = pd.DataFrame()
+        unsplit_df["id"] = [i for i in range(n)]
 
         for outcome_type in ["common", "uncommon"]:
             for outcome in outcomes[outcome_type]:
@@ -46,7 +51,10 @@ def test_props():
         splits = {"train": None, "test": None}
 
         splits["train"], splits["test"] = stratified_split_by_each_category(
-            df=unsplit_df, test_size=split_props["test"], stratify=all_outcomes
+            df=unsplit_df,
+            test_prop=split_props["test"],
+            stratify_cols=all_outcomes,
+            random_state=random_state,
         )
 
         for outcome in all_outcomes:
@@ -63,17 +71,42 @@ def test_props():
     # Aggregate proportions and get avg. across simulations
     print("\n")
     for split_type in ["test", "train"]:
+        print(f"{split_type} – (Expected | Simulated)")
+
         for outcome in all_outcomes:
             simulated_test_props = simulated_props[split_type][outcome]
-            avg_simulated_outcome_prop = sum(simulated_test_props) / len(
-                simulated_test_props
+            avg_simulated_outcome_prop = round(
+                sum(simulated_test_props) / len(simulated_test_props), 5
             )
+
             print(
-                f"    {split_type}: {expected_props[outcome]} | {avg_simulated_outcome_prop} – {outcome} – (Expected | Simulated)"
+                f"    {expected_props[outcome]} | {avg_simulated_outcome_prop} – {outcome}"
             )
+
             assert avg_simulated_outcome_prop == pytest.approx(
                 expected_props[outcome], rel=0.05
             )
+
+    first_train_ids = splits["train"]["id"][:10].tolist()
+
+    # Checks random.seed for random_state == 42
+    assert first_train_ids == [
+        0,
+        1,
+        2,
+        3,
+        4,
+        7,
+        8,
+        10,
+        11,
+        12,
+    ]
+
+    first_test_ids = splits["test"]["id"][:10].tolist()
+
+    # Checks random.seed for random_state == 42
+    assert first_test_ids == [5, 6, 9, 14, 21, 22, 29, 30, 31, 32]
 
 
 def create_list_of_vals_with_prop_of_ones(prop, n):
