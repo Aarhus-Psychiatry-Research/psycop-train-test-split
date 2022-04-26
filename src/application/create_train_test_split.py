@@ -112,7 +112,7 @@ if __name__ == "__main__":
         )
 
         msg.info(
-            f"s(U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome[:15]}"
+            f"(U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome[:15]}"
         )
 
     X_train["dw_ek_borger"].to_csv("splits/train_ids.csv", index=False)
