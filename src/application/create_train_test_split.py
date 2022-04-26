@@ -68,20 +68,23 @@ if __name__ == "__main__":
     test_of_intermediate_prop = 0.5
     # Meaning that the prop of the dataset that ends in val is (1 - train_prop) * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
 
+    msg.info("Starting train/intermediate split")
     X_train, X_intermediate = stratified_split_by_each_category(
         combined_df,
-        test_size=1 - train_prop,
+        test_prop=(1 - train_prop),
         random_state=random_state,
         stratify_cols=outcomes,
     )
+    msg.good("Completed train/intermediate split")
 
     msg.info("Starting test/val split")
     X_val, X_test = stratified_split_by_each_category(
         X_intermediate,
-        test_size=test_of_intermediate_prop,
+        test_prop=test_of_intermediate_prop,
         random_state=random_state,
         stratify_cols=outcomes,
     )
+    msg.good("Completed test/val split")
 
     n_in_split = {}
 
@@ -92,7 +95,7 @@ if __name__ == "__main__":
 
     for split in ["train", "test", "val"]:
         msg.info(
-            f"Prop of patients in {split}: {n_in_split[split]/n_in_split['total']}"
+            f"Prop of patients in {split}: {round(n_in_split[split]/n_in_split['total'], 4)}"
         )
 
     train_outcome_props = defaultdict(lambda: 0)
@@ -109,7 +112,7 @@ if __name__ == "__main__":
         )
 
         msg.info(
-            f"    (U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome}"
+            f"s(U|TEST|VAL|TRAIN): {unsplit_outcome_props[outcome]} | {test_outcome_prop} | {val_outcome_prop} | {train_outcome_prop} | {outcome[:15]}"
         )
 
     X_train["dw_ek_borger"].to_csv("splits/train_ids.csv", index=False)
