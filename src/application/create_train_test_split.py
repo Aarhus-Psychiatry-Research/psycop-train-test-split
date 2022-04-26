@@ -4,8 +4,9 @@ from collections import defaultdict
 
 import pandas as pd
 from psycoptts.add_outcomes import add_outcome_from_csv
-from psycoptts.stratify_by_each_category_individually import \
-    stratified_split_by_each_category
+from psycoptts.stratify_by_each_category_individually import (
+    stratified_split_by_each_category,
+)
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 from wasabi import msg
