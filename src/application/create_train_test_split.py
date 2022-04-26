@@ -4,10 +4,8 @@ from collections import defaultdict
 
 import pandas as pd
 from psycoptts.add_outcomes import add_outcome_from_csv
-from psycoptts.stratify_by_each_category_individually import (
-    stratified_split_by_each_category,
-)
-from sklearn.model_selection import train_test_split
+from psycoptts.stratify_by_each_category_individually import \
+    stratified_split_by_each_category
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 from wasabi import msg
@@ -50,6 +48,12 @@ if __name__ == "__main__":
     random_state = 42
 
     combined_df = load_patient_ids()
+    n_in_split = {c: 0 for c in ["total", "train", "test", "val"]}
+
+    n_in_split["total"] = combined_df.shape[0]
+
+    # Generate unsplit_outcome_props to test the split
+    unsplit_outcome_props = defaultdict(lambda: 0)
 
     for outcome in outcomes:
         combined_df = add_outcome_from_csv(
@@ -58,25 +62,24 @@ if __name__ == "__main__":
             new_colname=outcome,
             id_colname="dw_ek_borger",
         )
-        msg.good(f"Added {outcome}")
 
     train_prop = 0.7
     test_of_intermediate_prop = 0.5
     # Meaning that the prop of the dataset that ends in val is (1 - train_prop) * val_and_test_prop (e.g. 0.3 * 0.5 = 0.15)
 
-    X_train, X_intermediate = train_test_split(
+    X_train, X_intermediate = stratified_split_by_each_category(
         combined_df,
         test_size=1 - train_prop,
         random_state=random_state,
-        stratify=combined_df[outcomes],
+        stratify_cols=outcomes,
     )
 
-    msg.good("Starting test/val split")
+    msg.info("Starting test/val split")
     X_val, X_test = stratified_split_by_each_category(
         X_intermediate,
         test_size=test_of_intermediate_prop,
         random_state=random_state,
-        stratify=X_intermediate[outcomes],
+        stratify_cols=outcomes,
     )
 
     n_in_split = {}
