@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 from wasabi import msg
 
+from pathlib import Path
 
 def load_patient_ids(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
     view = f"{view}"
@@ -36,6 +37,10 @@ def load_patient_ids(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
 
 
 if __name__ == "__main__":
+
+    OUTCOME_ID_PATH = Path(
+        "\\\\TSCLIENT\\P\\MANBER01\\documentLibrary\\train-test-splits\\outcome_ids"
+    )
     outcomes = [
         "transition_to_schizophrenia",
         "inpatient_forced_admissions",
@@ -59,7 +64,7 @@ if __name__ == "__main__":
     for outcome in outcomes:
         combined_df = add_outcome_from_csv(
             df_in=combined_df,
-            df_outcome_path=f"outcome_ids/{outcome}.csv",
+            df_outcome_path=OUTCOME_ID_PATH / (outcome + ".csv"),
             new_colname=outcome,
             id_colname="dw_ek_borger",
         )
