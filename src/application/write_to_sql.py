@@ -19,5 +19,3 @@ if __name__ == "__main__":
             df, table_name=table_name, rows_per_chunk=5000, if_exists="replace"
         )
 
-
-# set default row per chunk to 5000
