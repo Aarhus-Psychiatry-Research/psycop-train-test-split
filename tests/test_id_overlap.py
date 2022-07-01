@@ -1,7 +1,7 @@
-import pytest
+from pathlib import Path
 
 import pandas as pd
-from pathlib import Path
+import pytest
 
 SPLIT_PATH = Path(__file__).parent.parent / "splits"
 
@@ -12,6 +12,9 @@ def _load_split(split: str):
 
 def test_overlap():
     """Check for overlapping ids in splits"""
+    if not SPLIT_PATH.exists():
+        pytest.skip(reason="No splits directory")
+
     train = _load_split("train")
     val = _load_split("val")
     test = _load_split("test")

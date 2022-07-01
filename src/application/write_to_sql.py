@@ -18,4 +18,3 @@ if __name__ == "__main__":
         write_df_to_sql(
             df, table_name=table_name, rows_per_chunk=5000, if_exists="replace"
         )
-

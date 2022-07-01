@@ -13,6 +13,7 @@ from wasabi import msg
 
 from pathlib import Path
 
+
 def load_patient_ids(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
     view = f"{view}"
     query = "SELECT * FROM [fct]." + view
