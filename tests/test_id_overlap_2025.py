@@ -16,7 +16,8 @@ def test_overlap_2025(split_path: str):
     assert val[val.isin(train)].empty
     assert test[test.isin(train)].empty
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     SPLIT_PATH = Path(__file__).parent.parent / "splits"
 
     test_overlap_2025(SPLIT_PATH)
