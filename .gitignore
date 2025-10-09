@@ -42,6 +42,7 @@ vignettes/*.pdf
 # Data files
 *.json
 *.csv
+/splits
 
 # Python
 *.pyc
