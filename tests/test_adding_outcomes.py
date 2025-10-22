@@ -1,6 +1,6 @@
 from pandas.testing import assert_frame_equal
 
-from psycoptts.add_outcomes import add_outcome_from_df
+from src.psycoptts.add_outcomes import add_outcome_from_df
 from testing_utils import *
 
 

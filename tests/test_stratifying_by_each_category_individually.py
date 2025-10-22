@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import List, Union
 import pandas as pd
 from wasabi import msg
-from psycoptts.stratify_by_each_category_individually import (
+from src.psycoptts.stratify_by_each_category_individually import (
     stratified_split_by_each_category,
 )
 
