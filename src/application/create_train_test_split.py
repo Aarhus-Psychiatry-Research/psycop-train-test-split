@@ -38,7 +38,6 @@ def load_patient_ids(view="FOR_kohorte_demografi_inkl_2021_feb2022"):
 
 
 if __name__ == "__main__":
-
     OUTCOME_ID_PATH = Path(
         "\\\\TSCLIENT\\P\\MANBER01\\documentLibrary\\train-test-splits\\outcome_ids"
     )

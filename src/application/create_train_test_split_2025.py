@@ -4,7 +4,6 @@ Creates randomized train/test split of data up until March 2025 (from CVD_T2D_ko
 
 import urllib
 import urllib.parse
-from collections import defaultdict
 
 import pandas as pd
 
@@ -16,13 +15,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 from wasabi import msg
 
-from pathlib import Path
 
 from sklearn.model_selection import train_test_split
 
 
 from sql_writer import write_df_to_sql
-
 
 
 def load_patient_ids(view="CVD_T2D_kohorte_demografi_marts_2025"):  # TODO fh:
@@ -49,7 +46,6 @@ def load_patient_ids(view="CVD_T2D_kohorte_demografi_marts_2025"):  # TODO fh:
 
 
 if __name__ == "__main__":
-
     random_state = 42
 
     combined_df = load_patient_ids()
@@ -91,9 +87,8 @@ if __name__ == "__main__":
             f"Prop of patients in {split}: {round(n_in_split[split]/n_in_split['total'], 4)}"
         )
 
-    write_df_to_sql (df=X_train, table_name= "psycop_train_ids_2025")
-    write_df_to_sql (df=X_val, table_name= "psycop_val_ids_2025")
-    write_df_to_sql (df=X_test, table_name= "psycop_test_ids_2025")
+    write_df_to_sql(df=X_train, table_name="psycop_train_ids_2025")
+    write_df_to_sql(df=X_val, table_name="psycop_val_ids_2025")
+    write_df_to_sql(df=X_test, table_name="psycop_test_ids_2025")
 
     msg.good("Splits complete and saved to sql!")
-    

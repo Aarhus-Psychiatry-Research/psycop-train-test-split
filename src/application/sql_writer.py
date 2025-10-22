@@ -20,7 +20,11 @@ def chunker(seq: Sequence | pd.DataFrame, size: int) -> Generator:  # type: igno
 
 
 def insert_with_progress(
-    df: pd.DataFrame, table_name: str, conn: Connection, rows_per_chunk: int, if_exists: str
+    df: pd.DataFrame,
+    table_name: str,
+    conn: Connection,
+    rows_per_chunk: int,
+    if_exists: str,
 ):
     """Chunk dataframe and insert each chunk, showing a progress bar.
     Args:
@@ -68,7 +72,9 @@ def write_df_to_sql(
     )
 
     engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
-    conn = engine.connect().execution_options(stream_results=True, fast_executemany=True)
+    conn = engine.connect().execution_options(
+        stream_results=True, fast_executemany=True
+    )
     if if_exists == "replace":
         msg.warn(
             "'replace' only replaces rows, not the table. If you want to delete rows, drop the entire table first (sql_load(query='DROP TABLE [fct].[psycop_train_ids]'))."
