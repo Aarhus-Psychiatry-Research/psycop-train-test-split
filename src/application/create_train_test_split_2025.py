@@ -21,6 +21,10 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 
 
+from sql_writer import write_df_to_sql
+
+
+
 def load_patient_ids(view="CVD_T2D_kohorte_demografi_marts_2025"):  # TODO fh:
     view = f"{view}"
     query = "SELECT * FROM [fct]." + view
@@ -45,8 +49,6 @@ def load_patient_ids(view="CVD_T2D_kohorte_demografi_marts_2025"):  # TODO fh:
 
 
 if __name__ == "__main__":
-
-    SPLIT_PATH = Path(__file__).parent.parent.parent / "splits"
 
     random_state = 42
 
@@ -89,7 +91,9 @@ if __name__ == "__main__":
             f"Prop of patients in {split}: {round(n_in_split[split]/n_in_split['total'], 4)}"
         )
 
-    X_train.to_csv(SPLIT_PATH / "train_ids_2025.csv", index=False)
-    X_val.to_csv(SPLIT_PATH / "val_ids_2025.csv", index=False)
-    X_test.to_csv(SPLIT_PATH / "test_ids_2025.csv", index=False)
-    msg.good("Splits complete!")
+
+    write_df_to_sql (df=X_val, table_name= "psycop_val_ids_2025")
+    write_df_to_sql (df=X_test, table_name= "psycop_test_ids_2025")
+
+    msg.good("Splits complete and saved to sql!")
+    
