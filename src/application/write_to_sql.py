@@ -1,3 +1,5 @@
+"""Write train, val, test splits to SQL server tables. Used in original data split script (create_train_test_split.py)."""
+
 from psycopmlutils.writers.sql_writer import write_df_to_sql
 
 import pandas as pd
